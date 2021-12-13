@@ -1,6 +1,8 @@
 package ffmpeg;
 
 import ffmpeg.options.global.flags.Flag;
+import ffmpeg.options.infile.InFileBuilder;
+import process.builder.CommandBuilder;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -9,17 +11,7 @@ import java.util.List;
 /**
  *
  */
-final class FFMPEGBuilder {
-
-    /**
-     * Input file for the FFMPEG command.
-     */
-    private Path cInFile;
-
-    /**
-     * Output file which is the result of the ffmpeg command.
-     */
-    private String cOutFile;
+final class FFMPEGBuilder implements CommandBuilder {
 
     /**
      * Global flags to apply to the command. These are assumed to be fully setup
@@ -51,23 +43,29 @@ final class FFMPEGBuilder {
     }
 
     /**
-     * @param inFile
+     *
+     * @param builder
      * @return
      */
-    public FFMPEGBuilder setInFile(final Path inFile) {
-        this.cInFile = inFile;
+    public FFMPEGBuilder setInFileBuilder(final InFileBuilder builder) {
         return this;
     }
 
-    // todo in file options
-
     /**
-     * @param outFilePath
-     * @return
+     * Compile the command builder into a single set of arguments of which can
+     * be executed.
+     *
+     * @return Compiled args of this builder template.
      */
-    public FFMPEGBuilder setOutFile(final String outFilePath) {
-        this.cOutFile = outFilePath;
-        return this;
+    @Override
+    public String[] build() {
+
+        // Compile flags
+        // Infile
+        // Infile options
+
+
+        return new String[0];
     }
 
     // todo outfile options
