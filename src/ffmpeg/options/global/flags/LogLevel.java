@@ -1,4 +1,4 @@
-package ffmpeg.options.flags;
+package ffmpeg.options.global.flags;
 
 import java.lang.reflect.MalformedParametersException;
 import java.util.Arrays;

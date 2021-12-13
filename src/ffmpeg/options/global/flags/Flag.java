@@ -1,6 +1,8 @@
-package ffmpeg.options.flags;
+package ffmpeg.options.global.flags;
 
 import ffmpeg.error.FFMPEGError;
+import ffmpeg.options.InputProcessArgument;
+import ffmpeg.options.ProcessArgument;
 
 /**
  * Represents all known FFMPEG Flags these are commands that can be applied
@@ -14,9 +16,27 @@ import ffmpeg.error.FFMPEGError;
  * @author -Ry
  * @version 0.1 Copyright: N/A
  */
-public enum Flag {
+public enum Flag implements ProcessArgument, InputProcessArgument {
+
+    /**
+     * States whether the log level
+     */
     LOG_LEVEL("-loglevel", true, LogLevel.VERBOSE.compile()),
-    REPORT("-report", false, null);
+
+    /**
+     *
+     */
+    REPORT("-report", false, null),
+
+    /**
+     *
+     */
+    ALWAYS_OVERWRITE("-y", false, null),
+
+    /**
+     *
+     */
+    NEVER_OVERWRITE("-n", false, null);
 
     /**
      * Literal flag value used to invoke this flag.
@@ -62,7 +82,7 @@ public enum Flag {
      *
      * @return Flag ready to be built into a command.
      */
-    public String compileFlag() {
+    public String compile() {
         // No input required
         if (cDefaultValue == null || cDefaultValue.equals("")) {
             return cFlagLiteral;
@@ -82,7 +102,7 @@ public enum Flag {
      * @return Compiled flag with the provided value.
      * @throws UnsupportedOperationException If the flag does not accept input.
      */
-    public String compileFlag(final String value) {
+    public String compile(final String value) {
 
         if (cIsInputRequired) {
             throw new UnsupportedOperationException(
@@ -94,6 +114,48 @@ public enum Flag {
             return cFlagLiteral
                     + " "
                     + cDefaultValue;
+        }
+    }
+
+    /**
+     * Compile the process argument from the provided args string.
+     *
+     * @param args The arguments to compile into the specified argument.
+     * @return Compiled argument ready to execute/compile further.
+     * @throws UnsupportedOperationException If input is not required for this
+     *                                       flag.
+     * @throws IllegalArgumentException      If the number of arguments does not
+     *                                       meet the expected '1'.
+     */
+    @Override
+    public String compile(final String... args) {
+
+        if (args.length == 1) {
+
+            if (cIsInputRequired) {
+                throw new UnsupportedOperationException(
+                        FFMPEGError.ERR_FLAG_ARGS_NOT_REQUIRED.compile(
+                                name(),
+                                cFlagLiteral,
+                                args[0]
+                        ));
+
+            } else {
+                return cFlagLiteral
+                        + " "
+                        + cDefaultValue;
+            }
+
+            // Incorrect arg count
+        } else {
+            final int expectedArgCount = cIsInputRequired ? 1 : 0;
+            throw new IllegalArgumentException(
+                    FFMPEGError.ERR_FLAG_NUM_ARGS_INVALID.compile(
+                            name(),
+                            cFlagLiteral,
+                            String.valueOf(expectedArgCount),
+                            String.valueOf(args.length)
+                    ));
         }
     }
 }
