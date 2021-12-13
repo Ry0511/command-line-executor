@@ -1,6 +1,7 @@
 package ffmpeg.options.global.flags;
 
 import ffmpeg.error.FFMPEGError;
+import ffmpeg.options.CompileUtils;
 import ffmpeg.options.InputProcessArgument;
 import ffmpeg.options.ProcessArgument;
 
@@ -19,24 +20,34 @@ import ffmpeg.options.ProcessArgument;
 public enum Flag implements ProcessArgument, InputProcessArgument {
 
     /**
-     * States whether the log level
+     * Logging level for some ffmpeg command values available are available at
+     * {@link LogLevel} note some are available for chaining such as {@link
+     * LogLevel#LEVEL} and {@link LogLevel#VERBOSE} which can be compiled
+     * together using {@link LogLevel#compile(LogLevel...)}.
      */
     LOG_LEVEL("-loglevel", true, LogLevel.VERBOSE.compile()),
 
     /**
-     *
+     * Generates a report of some ffmpeg command once finished.
      */
     REPORT("-report", false, null),
 
     /**
-     *
+     * Flag specifies that we should always overwrite the outfile if it already
+     * exists.
      */
     ALWAYS_OVERWRITE("-y", false, null),
 
     /**
-     *
+     * Flag specifies that we should never overwrite the outfile if one already
+     * exists.
      */
-    NEVER_OVERWRITE("-n", false, null);
+    NEVER_OVERWRITE("-n", false, null),
+
+    /**
+     * Prints out stats of the currently executing process.
+     */
+    STATS("-stats", false, null);
 
     /**
      * Literal flag value used to invoke this flag.
@@ -111,9 +122,7 @@ public enum Flag implements ProcessArgument, InputProcessArgument {
                     ));
 
         } else {
-            return cFlagLiteral
-                    + " "
-                    + cDefaultValue;
+            return CompileUtils.compileWithValues(cFlagLiteral, value);
         }
     }
 
@@ -133,17 +142,15 @@ public enum Flag implements ProcessArgument, InputProcessArgument {
         if (args.length == 1) {
 
             if (cIsInputRequired) {
+                return CompileUtils.compileWithValues(cFlagLiteral, args);
+
+            } else {
                 throw new UnsupportedOperationException(
                         FFMPEGError.ERR_FLAG_ARGS_NOT_REQUIRED.compile(
                                 name(),
                                 cFlagLiteral,
                                 args[0]
                         ));
-
-            } else {
-                return cFlagLiteral
-                        + " "
-                        + cDefaultValue;
             }
 
             // Incorrect arg count
