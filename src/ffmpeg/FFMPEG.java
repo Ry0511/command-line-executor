@@ -1,5 +1,6 @@
 package ffmpeg;
 
+import ffmpeg.options.global.flags.Flag;
 import ffmpeg.options.global.flags.LogLevel;
 import process.builder.TrackedProcessExecutor;
 import process.builder.event.handler.RegexHandler;
@@ -62,6 +63,7 @@ public class FFMPEG {
 
         process.start(
                 "ffmpeg",
+                Flag.STATS.compile(),
                 "-loglevel",
                 LogLevel.compile(LogLevel.LEVEL, LogLevel.VERBOSE),
                 "-y",
