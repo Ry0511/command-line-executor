@@ -12,8 +12,18 @@ import java.util.regex.Pattern;
  * @version 0.1 Copyright: N/A
  */
 public enum FFMPEGError {
+
+    /**
+     *
+     */
     ERR_FLAG_ARGS_NOT_REQUIRED("[FLAG_ERROR] The flag '%s'/'%s' does not "
-            + "require any input but was given the input: '%s'");
+            + "require any input but was given the input: '%s'"),
+
+    /**
+     *
+     */
+    ERR_FLAG_NUM_ARGS_INVALID("[FLAG_ERROR] The flag '%s'/'%s' could not be "
+            + "compiled expected '%s' number of arguments but was given '%s'.");
 
     /**
      * The number of arguments that the message requires. This is only the upper
