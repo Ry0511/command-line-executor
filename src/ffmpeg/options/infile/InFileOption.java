@@ -7,13 +7,49 @@ import ffmpeg.options.InputProcessArgument;
  * Represents a series of options that can be used with the {@link
  * InFileBuilder} for building an FFMPEG command structure for the Input file
  * section.
+ * <p>
+ * This enum was designed around quick and simple implementations of options
+ * giving no actual implementation or limitations of the possible values.
  *
  * @author -Ry
- * @version 0.1 Copyright: N/A
+ * @version 0.2 Copyright: N/A
  */
 public enum InFileOption implements InputProcessArgument {
-    VIDEO_BIT_RATE("-b:v", true, "1024", 1, 1),
-    AUDIO_BIT_RATE("-b:a", true, "1024", 1, 1);
+
+    /**
+     * Sets the video bit rate while encoding to the provided value at compile
+     * time. If no value is specified then 1024 is assumed.
+     */
+    VIDEO_BIT_RATE("-b:v", true, "1024"),
+
+    /**
+     * Sets the audio bit rate while encoding to the provided value at compile
+     * time. If no value is specified then 1024 is assumed.
+     */
+    AUDIO_BIT_RATE("-b:a", true, "1024"),
+
+    /**
+     * Sets the encoding preset to use default value is 'veryslow'.
+     */
+    PRESET("-preset", true, "veryslow"),
+
+    /**
+     * Sets the start position of the encoding; default value is 0.
+     */
+    START_FROM_POS("-ss", true, "0"),
+
+    /**
+     * Sets the duration after the {@link #START_FROM_POS} to encode. Default
+     * value is {@link Integer#MAX_VALUE} which should capture all/most media
+     * fully.
+     */
+    DURATION("-t", true, String.valueOf(Integer.MAX_VALUE)),
+
+    /**
+     * Sets the exact end time after the {@link #START_FROM_POS} to encode.
+     * Default value is {@link Integer#MAX_VALUE}.
+     */
+    END_AT_POS("-to", true, String.valueOf(Integer.MAX_VALUE));
 
     /**
      * The identifier string of this option this is what is used to invoke the
@@ -32,18 +68,6 @@ public enum InFileOption implements InputProcessArgument {
     private final String cDefaultValue;
 
     /**
-     * The minimum acceptable number of arguments that the {@link
-     * #compile(String...)} will allow.
-     */
-    private final int cMinArgs;
-
-    /**
-     * The maximum acceptable number of arguments that the {@link
-     * #compile(String...)} will accept.
-     */
-    private final int cMaxArgs;
-
-    /**
      * Generic enum constructor.
      *
      * @param identifier Invocation string.
@@ -52,14 +76,10 @@ public enum InFileOption implements InputProcessArgument {
      */
     InFileOption(final String identifier,
                  final boolean requiresInput,
-                 final String defaultValue,
-                 final int minArgs,
-                 final int maxArgs) {
+                 final String defaultValue) {
         this.cIdentifier = identifier;
         this.cRequiresInput = requiresInput;
         this.cDefaultValue = defaultValue;
-        this.cMinArgs = minArgs;
-        this.cMaxArgs = maxArgs;
     }
 
     /**
@@ -70,14 +90,14 @@ public enum InFileOption implements InputProcessArgument {
      */
     @Override
     public String compile(final String... args) {
-        if ((args.length >= cMinArgs) && (args.length < cMaxArgs)) {
+        if (cRequiresInput) {
 
             return CompileUtils.compileWithValues(
                     cIdentifier,
                     args
             );
 
-            // Arguments are invalid
+            // Arguments are invalid/not needed
         } else {
             //todo error message
             throw new IllegalArgumentException();
@@ -92,6 +112,6 @@ public enum InFileOption implements InputProcessArgument {
      */
     @Override
     public String compile() {
-        return null;
+        return CompileUtils.compileWithValues(cIdentifier, cDefaultValue);
     }
 }
