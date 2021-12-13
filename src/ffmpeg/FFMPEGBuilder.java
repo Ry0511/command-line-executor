@@ -1,6 +1,6 @@
 package ffmpeg;
 
-import ffmpeg.options.flags.Flag;
+import ffmpeg.options.global.flags.Flag;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -11,13 +11,23 @@ import java.util.List;
  */
 final class FFMPEGBuilder {
 
+    /**
+     * Input file for the FFMPEG command.
+     */
     private Path cInFile;
-    private String cOutFile;
-    private final List<Flag> cGlobalFlags = new ArrayList<>();
-    private FFMPEG cFfmpegExecutor;
 
     /**
-     *
+     * Output file which is the result of the ffmpeg command.
+     */
+    private String cOutFile;
+
+    /**
+     * Global flags to apply to the command. These are assumed to be fully setup
+     * and require no extra information.
+     */
+    private final List<Flag> cGlobalFlags = new ArrayList<>();
+
+    /**
      * @param flag
      * @return
      */
@@ -31,7 +41,6 @@ final class FFMPEGBuilder {
     }
 
     /**
-     *
      * @param flag
      * @return
      */
@@ -42,7 +51,6 @@ final class FFMPEGBuilder {
     }
 
     /**
-     *
      * @param inFile
      * @return
      */
@@ -54,7 +62,6 @@ final class FFMPEGBuilder {
     // todo in file options
 
     /**
-     *
      * @param outFilePath
      * @return
      */
