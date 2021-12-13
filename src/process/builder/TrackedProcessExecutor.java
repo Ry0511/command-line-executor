@@ -77,11 +77,34 @@ public class TrackedProcessExecutor {
     }
 
     /**
+     * Convenience method for starting a process directly from some builder.
+     * Note that this method is exactly the same as {@link #start(String...)}
+     * just supplying 'String...' with {@link CommandBuilder#build()}.
+     *
+     * @param builder The builder to start the process from.
+     * @return The process that was started. It may have concluded, or not by
+     * the time it's received.
+     * @throws IOException           If one occurs whilst building the process.
+     * @throws IllegalStateException If a task is currently running and not yet
+     *                               halted or been killed.
+     * @implNote Literally just, {@literal return this.start(builder.build())}
+     */
+    public synchronized Process start(final CommandBuilder builder)
+            throws IOException {
+        return this.start(builder.build());
+    }
+
+    /**
      * Reads both channels of output and for any new messages informs the
      * handler of said changes.
+     *
+     * @throws IOException If one occurs whilst reading the IO channels.
      */
     private synchronized void handleProcess() throws IOException {
 
+        //todo Hang time event. If a process has no input for a period of
+        // time ping some event informing of this. Do this periodically every
+        // set interval so that they can attempt to fix the problem/hang.
         String curMessage;
         while ((curMessage = nextMessage()) != null) {
 
@@ -194,8 +217,8 @@ public class TrackedProcessExecutor {
      * that will receive all updates about the currently alive process.
      * <p>
      * If this is not set then a Default handler is used that being {@link
-     * ProcessHandler.ConsoleHandler}. Which will send all
-     * messages to the console.
+     * ProcessHandler.ConsoleHandler}. Which will send all messages to the
+     * console.
      *
      * @param handler The new handler to use.
      */
