@@ -1,6 +1,6 @@
 package ffmpeg;
 
-import ffmpeg.options.flags.LogLevel;
+import ffmpeg.options.global.flags.LogLevel;
 import process.builder.TrackedProcessExecutor;
 import process.builder.event.handler.RegexHandler;
 
