@@ -1,7 +1,8 @@
 package ffmpeg.options.infile;
 
-import ffmpeg.options.CompileUtils;
 import ffmpeg.options.InputProcessArgument;
+import ffmpeg.options.ProcessArgument;
+import java.util.stream.IntStream;
 
 /**
  * Represents a series of options that can be used with the {@link
@@ -89,13 +90,13 @@ public enum InFileOption implements InputProcessArgument {
      * @return Compiled argument ready to execute/compile further.
      */
     @Override
-    public String compile(final String... args) {
+    public String[] compile(final String... args) {
         if (cRequiresInput) {
 
-            return CompileUtils.compileWithValues(
-                    cIdentifier,
-                    args
-            );
+            final String[] argsBig = new String[args.length + 1];
+            argsBig[0] = cIdentifier;
+            IntStream.range(0, args.length).forEach(i -> argsBig[i + 1] = args[i]);
+            return ProcessArgument.buildArray(argsBig);
 
             // Arguments are invalid/not needed
         } else {
@@ -111,7 +112,7 @@ public enum InFileOption implements InputProcessArgument {
      * @return Compiled argument ready to be executed/compiled further.
      */
     @Override
-    public String compile() {
-        return CompileUtils.compileWithValues(cIdentifier, cDefaultValue);
+    public String[] compile() {
+        return ProcessArgument.buildArray(cIdentifier, cDefaultValue);
     }
 }

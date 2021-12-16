@@ -64,11 +64,11 @@ public enum FFMPEGError {
      */
     public String compile(final String... args) {
 
-        if (args.length > cNumArgs) {
+        if (args.length >= cNumArgs) {
 
             String s = cBaseStr;
             for (String arg : args) {
-                s = String.format(s, arg);
+                s = s.replaceFirst("%s", arg);
             }
 
             return s;

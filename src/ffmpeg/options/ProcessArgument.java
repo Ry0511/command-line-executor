@@ -22,5 +22,17 @@ public interface ProcessArgument {
      *
      * @return Compiled argument ready to be executed/compiled further.
      */
-    String compile();
+    String[] compile();
+
+    /**
+     * Convenience method for building an array of any type.
+     *
+     * @param args The arguments to be encapsulated in an array.
+     * @param <T> The type of the elements held in the array.
+     * @return The provided elements wrapped in an Array of the specified type.
+     */
+    @SafeVarargs
+    static <T> T[] buildArray(final T... args) {
+        return args;
+    }
 }

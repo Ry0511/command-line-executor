@@ -52,6 +52,16 @@ public class RegexHandler implements ProcessHandler {
     private final AtomicBoolean isCleanseWhitespace = new AtomicBoolean();
 
     /**
+     * Initialises the maps to their default {@link HashMap#HashMap()} states
+     * and for the event finished handler it ignores it unless set later.
+     */
+    public RegexHandler() {
+        this.regMsgHandlers = Collections.synchronizedMap(new HashMap<>());
+        this.regErrHandlers = Collections.synchronizedMap(new HashMap<>());
+        this.regFinishedHandler = OutputFinishedEvent::wasNaturalEnd;
+    }
+
+    /**
      * Constructs the regex handler from the base finish handler. Initialises
      * the maps to their default {@link HashMap#HashMap()} states.
      *
@@ -170,7 +180,7 @@ public class RegexHandler implements ProcessHandler {
      */
     @Override
     public void onErrorMessage(final OutputErrorEvent event) {
-        final String targetStr = getTargetString(event.getErrorMessage());
+        final String targetStr = getTargetString(event.getMessage());
         for (Pattern p : this.regErrHandlers.keySet()) {
             final Matcher m = p.matcher(targetStr);
 

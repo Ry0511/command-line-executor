@@ -16,6 +16,6 @@ public interface InputProcessArgument extends ProcessArgument {
      * @param args The arguments to compile into the specified argument.
      * @return Compiled argument ready to execute/compile further.
      */
-    String compile(String... args);
+    String[] compile(final String... args);
 }
 

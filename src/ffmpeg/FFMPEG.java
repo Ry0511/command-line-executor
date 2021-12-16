@@ -1,14 +1,16 @@
 package ffmpeg;
 
 import ffmpeg.options.global.flags.Flag;
-import ffmpeg.options.global.flags.LogLevel;
+import ffmpeg.options.infile.InFileBuilder;
+import ffmpeg.options.infile.InFileOption;
 import process.builder.TrackedProcessExecutor;
-import process.builder.event.handler.RegexHandler;
+import process.builder.event.handler.ProcessHandler;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.regex.Pattern;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  *
@@ -18,7 +20,12 @@ public class FFMPEG {
     /**
      * Target ffmpeg variable.
      */
-    private final String ffmpegPath;
+    private final String cFfmpegPath;
+
+    /**
+     * Executor which will handle executing ffmpeg commands.
+     */
+    private FFMPEGExecutor cExecutor = new FFMPEGExecutor();
 
     /**
      * Construct an FFMPEG instance from an absolute path to some ffmpeg
@@ -27,53 +34,64 @@ public class FFMPEG {
      * @param path Path pointing to some ffmpeg executable.
      */
     public FFMPEG(final String path) {
-        this.ffmpegPath = path;
+        this.cFfmpegPath = path;
     }
 
     /**
-     * Constructs a ffmpeg.FFMPEG instance from the base 'ffmpeg' path variable.
+     * Constructs a ffmpeg.FFMPEG instance from the base 'ffmpeg' path
+     * variable.
      */
     public FFMPEG() {
-        this.ffmpegPath = "ffmpeg";
+        this.cFfmpegPath = "ffmpeg";
+    }
+
+    /**
+     * Compile and execute the provided ffmpeg command builder.
+     *
+     * @param builder The builder to compile.
+     * @return Started, possibly finished task.
+     */
+    public Process execute(final FFMPEGBuilder builder) throws IOException {
+        System.out.println(
+                "[EXECUTING] -> "
+                + Arrays.deepToString(builder.build())
+        );
+
+        final List<String> args =
+                new ArrayList<>(Arrays.asList(builder.build()));
+        args.add(0, cFfmpegPath);
+        return this.cExecutor.start(args.toArray(new String[0]));
+    }
+
+    /**
+     * @return Executor that will run all ffmpeg commands and provide events.
+     */
+    public FFMPEGExecutor getExecutor() {
+        return cExecutor;
     }
 
     public static void main(String[] args) throws IOException {
-        final TrackedProcessExecutor process
-                = new TrackedProcessExecutor();
 
-        RegexHandler handler = new RegexHandler((e) -> {
-            System.out.println(
-                    "[FINISHED] - NATURALLY? : "
-                    + e.wasNaturalEnd()
+        final FFMPEG ffmpeg = new FFMPEG();
+
+        ffmpeg.getExecutor().addProgressListener((e) -> {
+            System.out.printf(
+                    "[[G, %s]::[L, %s]::[H, %s]] -> %s%n",
+                    e.getEventGroup(),
+                    e.getFiredListener(),
+                    e.getTargetHandler(),
+                    e.getTarget()
             );
         });
 
-        handler.addRegMessageHandler(
-                Pattern.compile(".*"),
-                (e) -> {
-                    System.out.println(e.getMessage());
-                }
-        );
+        ffmpeg.getExecutor().getProcessHandler().addRegMsgListener((e) -> {
+            System.out.println(e.getTarget().getMessage());
+        });
 
-        handler.setIsCleanseWhitespace(true);
-
-        process.setProcessHandler(handler);
-
-        final Path path = Paths.get("test/test.mp4");
-
-        process.start(
-                "ffmpeg",
-                Flag.STATS.compile(),
-                "-loglevel",
-                LogLevel.compile(LogLevel.LEVEL, LogLevel.VERBOSE),
-                "-y",
-                "-i",
-                path.toAbsolutePath().toString(),
-                "-b:v",
-                "700k",
-                path.getParent().toAbsolutePath()
-                        + "\\"
-                        + "output.mp4"
+        ffmpeg.execute(new FFMPEGBuilder()
+                .setInFileBuilder(new InFileBuilder().setInFile(Paths.get("test/test.mp4"))
+                        .addOption(InFileOption.VIDEO_BIT_RATE, "700k"))
+                .addFlag(Flag.ALWAYS_OVERWRITE)
         );
     }
 }

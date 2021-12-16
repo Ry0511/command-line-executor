@@ -1,5 +1,6 @@
 package ffmpeg.options;
 
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.StringJoiner;
@@ -72,5 +73,15 @@ public final class CompileUtils {
         Arrays.stream(args).forEach(sj::add);
         
         return sj.toString();
+    }
+
+    /**
+     * Quotes the provided string.
+     *
+     * @param string The string to quote.
+     * @return String encapsulated in ".
+     */
+    public static String quote(final String string) {
+        return String.format("\"%s\"", string);
     }
 }

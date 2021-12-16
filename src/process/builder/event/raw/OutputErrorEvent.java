@@ -1,18 +1,20 @@
 package process.builder.event.raw;
 
 import process.builder.TrackedProcessExecutor;
+//todo comment
+/**
+ *
+ */
+public class OutputErrorEvent extends OutputMessageEvent {
 
-public class OutputErrorEvent extends TargetedEvent<TrackedProcessExecutor> {
-
-    private final String errorMessage;
-
+    /**
+     * Constructs the error message from the base message event.
+     *
+     * @param target The target executor that has encountered the error.
+     * @param message The error that was encountered.
+     */
     public OutputErrorEvent(final TrackedProcessExecutor target,
-                            final String pErrorMessage) {
-        super(target);
-        this.errorMessage = pErrorMessage;
-    }
-
-    public String getErrorMessage() {
-        return errorMessage;
+                            final String message) {
+        super(target, message);
     }
 }

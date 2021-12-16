@@ -39,7 +39,7 @@ public interface ProcessHandler {
          */
         @Override
         public void onErrorMessage(final OutputErrorEvent event) {
-            System.err.println(event.getErrorMessage());
+            System.err.println(event.getMessage());
         }
 
         /**

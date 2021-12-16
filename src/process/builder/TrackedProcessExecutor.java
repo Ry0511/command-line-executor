@@ -89,8 +89,8 @@ public class TrackedProcessExecutor {
      *                               halted or been killed.
      * @implNote Literally just, {@literal return this.start(builder.build())}
      */
-    public synchronized Process start(final CommandBuilder builder)
-            throws IOException {
+    public synchronized Process start(
+            final CommandBuilder<String[]> builder) throws IOException {
         return this.start(builder.build());
     }
 
@@ -104,7 +104,7 @@ public class TrackedProcessExecutor {
 
         //todo Hang time event. If a process has no input for a period of
         // time ping some event informing of this. Do this periodically every
-        // set interval so that they can attempt to fix the problem/hang.
+        // set interval so that they can attempt to fix the problem.
         String curMessage;
         while ((curMessage = nextMessage()) != null) {
 
@@ -224,5 +224,12 @@ public class TrackedProcessExecutor {
      */
     public synchronized void setProcessHandler(final ProcessHandler handler) {
         this.processHandler = handler;
+    }
+
+    /**
+     * @return The current process handler.
+     */
+    public ProcessHandler getProcessHandler() {
+        return processHandler;
     }
 }

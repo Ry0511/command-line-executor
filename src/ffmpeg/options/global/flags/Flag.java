@@ -5,6 +5,10 @@ import ffmpeg.options.CompileUtils;
 import ffmpeg.options.InputProcessArgument;
 import ffmpeg.options.ProcessArgument;
 
+import java.util.Arrays;
+import java.util.function.IntFunction;
+import java.util.stream.Stream;
+
 /**
  * Represents all known FFMPEG Flags these are commands that can be applied
  * before the infile. Such as '-y' which always overwrites and '-n' which never
@@ -93,16 +97,14 @@ public enum Flag implements ProcessArgument, InputProcessArgument {
      *
      * @return Flag ready to be built into a command.
      */
-    public String compile() {
+    public String[] compile() {
         // No input required
         if (cDefaultValue == null || cDefaultValue.equals("")) {
-            return cFlagLiteral;
+            return ProcessArgument.buildArray(cFlagLiteral);
 
             // Default value
         } else {
-            return cFlagLiteral
-                    + " "
-                    + cDefaultValue;
+            return ProcessArgument.buildArray(cFlagLiteral, cDefaultValue);
         }
     }
 
@@ -137,12 +139,18 @@ public enum Flag implements ProcessArgument, InputProcessArgument {
      *                                       meet the expected '1'.
      */
     @Override
-    public String compile(final String... args) {
+    public String[] compile(final String... args) {
 
         if (args.length == 1) {
 
             if (cIsInputRequired) {
-                return CompileUtils.compileWithValues(cFlagLiteral, args);
+                final Stream.Builder<String> streamArgs = Stream.builder();
+                streamArgs.add(cFlagLiteral);
+                Arrays.stream(args).forEach(streamArgs::add);
+
+                return ProcessArgument.buildArray(
+                        streamArgs.build().toArray(value -> new String[0])
+                );
 
             } else {
                 throw new UnsupportedOperationException(

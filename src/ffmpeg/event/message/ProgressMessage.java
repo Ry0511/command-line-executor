@@ -1,4 +1,4 @@
-package ffmpeg.message;
+package ffmpeg.event.message;
 
 import java.lang.reflect.MalformedParametersException;
 import java.util.Objects;
@@ -20,7 +20,7 @@ public class ProgressMessage {
      * "fps=              foo            20".
      */
     public static final Pattern PROGRESS_REGEX = Pattern.compile(
-            "(?m)^frame=(.*?)"
+            "(?m)^.*frame=(.*?)"
                     + "fps=(.*?)"
                     + "q=(.*?)"
                     + "size=(.*?)"
